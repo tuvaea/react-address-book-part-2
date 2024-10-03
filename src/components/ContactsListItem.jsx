@@ -1,10 +1,16 @@
+import { useNavigate } from "react-router-dom";
 
 
 export function ContactsListItem({contact}) {
 
-    //const {contact} = useContext(ContactContext);
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate(`/contact/${contact.id}`);
+      };
+
     return(
-        <li>
+        <li onClick={handleClick} style={{ cursor: "pointer" }}>
             <h3>{contact.firstName} {contact.lastName}</h3>
         </li>
     )

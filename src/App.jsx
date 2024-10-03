@@ -2,15 +2,17 @@ import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import { Dashboard } from './components/Dashboard';
 import { createContext, useEffect, useState } from 'react';
+import { CreateForm } from './components/CreateForm';
+import { Layout } from './components/Layout';
+import { ProfileView } from './components/ProfileView';
 
 const ContactContext = createContext();
 
 function App() {
     const [contact, setContact] = useState(null);
     const [contacts, setContacts] = useState([]);
-    //https://boolean-uk-api-server.fly.dev/tuvaea/contact   (get all contacts)
 
-    const fetchPeople = async () => {
+    const fetchContacts = async () => {
         const response = await fetch(
           `https://boolean-uk-api-server.fly.dev/tuvaea/contact`
         );
@@ -20,19 +22,19 @@ function App() {
       }
     
       useEffect(() => {
-        fetchPeople();
-        //console.log(contacts)
+        fetchContacts();
       }, []);
-
 
     return (
         <>
           <header className='header'>
             <h1>Your Contact Book</h1>
           </header>
-          <ContactContext.Provider value={{contact, setContact, contacts, setContacts}}>
+          <ContactContext.Provider value={{contact, setContact, contacts, setContacts, fetchContacts }}>
             <Routes>
-                <Route path='/' element={<Dashboard />}/>
+                <Route path="/" element={<Layout><Dashboard /></Layout>} />
+                <Route path="/new" element={<Layout><CreateForm /></Layout>} />
+                <Route path="/contact/:id" element={<Layout><ProfileView /></Layout>} />
             </Routes>
           </ContactContext.Provider>
         </>
