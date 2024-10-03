@@ -35,6 +35,8 @@ function App() {
                 <Route path="/" element={<Layout><Dashboard /></Layout>} />
                 <Route path="/new" element={<Layout><CreateForm /></Layout>} />
                 <Route path="/contact/:id" element={<Layout><ProfileView /></Layout>} />
+                <Route path="/edit/:id" element={<Layout><CreateForm /></Layout>} />
+
             </Routes>
           </ContactContext.Provider>
         </>

@@ -1,41 +1,55 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ContactContext } from "../App";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const initialFormData = {
-  firstName: "",
-  lastName: "",
-  street: "",
-  city: ""
-};
 
 export function CreateForm() {
-    const { contacts, fetchContacts } = useContext(ContactContext);
-    
+
+    const initialFormData = {
+      firstName: "",
+      lastName: "",
+      street: "",
+      city: ""
+    };
+
+    const { fetchContacts, contacts } = useContext(ContactContext);
     const [formData, setFormData] = useState(initialFormData);
-
-    const maxId = Math.max(...contacts.map(c => c.id));
-
+    const { id } = useParams();
     const navigate = useNavigate();
 
-    console.log("maxid: " + maxId);
+    useEffect(() => {
+      if (id) {
+        const contactToEdit = contacts.find((contact) => contact.id === parseInt(id));
+        if (contactToEdit) {
+          setFormData(contactToEdit);
+        }
+      }
+    }, [id, contacts]);
     
+
     async function handleSubmit(event) {
       event.preventDefault();
-        const response = await fetch(`https://boolean-uk-api-server.fly.dev/tuvaea/contact`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+
+      if (id) {
+        await fetch(`https://boolean-uk-api-server.fly.dev/tuvaea/contact/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
         });
-        console.log(response);
+        navigate(`/contact/${id}`); 
+      } else {
+        await fetch(`https://boolean-uk-api-server.fly.dev/tuvaea/contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        navigate('/'); 
+      }
   
         await fetchContacts();
-  
         setFormData(initialFormData);
-        navigate('/'); 
+        
     }
 
     const handleChange = (event) => {
@@ -87,7 +101,7 @@ export function CreateForm() {
                   className="margin-item form-input"
                 />
               </div>
-              <button type="submit">Create</button>
+              <button type="submit">{id ? "Update" : "Create"}</button>
             </form>
         </div>
     )
